@@ -1,45 +1,65 @@
 #!/usr/bin/env bash
 
-# Update and install dependencies
-apt-get update
-apt-get install -y curl wget tar
+# Auto-install FileBrowser in Proxmox LXC with default prompts and improved UX
+# Author: Najdat (Customized from community-scripts by tteck)
 
-# Download and install FileBrowser
-curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-amd64-filebrowser.tar.gz | tar -xz -C /usr/local/bin
-chmod +x /usr/local/bin/filebrowser
+set -e
 
-# Create FileBrowser configuration directory
-mkdir -p /etc/filebrowser
+# Function to prompt with default
+prompt() {
+  local prompt_text="$1"
+  local default_value="$2"
+  read -p "$prompt_text (Default: $default_value): " value
+  echo "${value:-$default_value}"
+}
 
-# Prompt for authentication method
-read -p "Use No Authentication? (y/n): " NOAUTH
+# Detect host IP
+HOST_IP=$(hostname -I | awk '{print $1}')
+SUGGESTED_IP="${HOST_IP%.*}.122"
+GATEWAY="${HOST_IP%.*}.1"
 
-if [[ "$NOAUTH" == "y" || "$NOAUTH" == "Y" ]]; then
-  /usr/local/bin/filebrowser config init --auth.method=noauth
-else
-  read -p "Enter admin username: " ADMIN_USER
-  read -p "Enter admin password: " ADMIN_PASS
-  /usr/local/bin/filebrowser config init
-  /usr/local/bin/filebrowser users add $ADMIN_USER $ADMIN_PASS --perm.admin
-fi
+# Ask for user input with defaults
+read -p "Enter Container ID (e.g., 100): " CTID
+if [[ -z "$CTID" ]]; then echo "Container ID is required"; exit 1; fi
 
-# Create systemd service
-cat <<EOF >/etc/systemd/system/filebrowser.service
-[Unit]
-Description=FileBrowser
-After=network.target
+HOSTNAME=$(prompt "Enter Container Name" "filebrowser")
+CORES=$(prompt "Enter CPU Cores" "1")
+MEMORY=$(prompt "Enter RAM in MB" "512")
+DISK=$(prompt "Enter Disk Size in GB" "5")
+BRIDGE=$(prompt "Enter Network Bridge" "vmbr0")
+IP=$(prompt "Enter Static IP" "$SUGGESTED_IP/24")
+GATEWAY=$(prompt "Enter Gateway" "$GATEWAY")
 
-[Service]
-ExecStart=/usr/local/bin/filebrowser -r /
-Restart=always
-User=root
+# Password prompt with check
+while true; do
+  read -s -p "Enter new password (min 5 chars): " PASSWORD
+  echo
+  read -s -p "Retype new password: " PASSWORD_CONFIRM
+  echo
+  if [[ "$PASSWORD" != "$PASSWORD_CONFIRM" ]]; then
+    echo "Passwords do not match. Try again."
+  elif [[ ${#PASSWORD} -lt 5 ]]; then
+    echo "Password must be at least 5 characters."
+  else
+    break
+  fi
+done
 
-[Install]
-WantedBy=multi-user.target
-EOF
+# Create the LXC container
+TEMPLATE="local:vztmpl/debian-12-standard_12.0-1_amd64.tar.zst"
+pct create $CTID $TEMPLATE \
+  -hostname $HOSTNAME \
+  -cores $CORES \
+  -memory $MEMORY \
+  -rootfs local-lvm:${DISK} \
+  -net0 name=eth0,bridge=$BRIDGE,ip=$IP,gw=$GATEWAY \
+  -unprivileged 1 \
+  -features nesting=1 \
+  -password $PASSWORD \
+  -start 1
 
-# Enable and start FileBrowser service
-systemctl enable filebrowser
-systemctl start filebrowser
+# Wait and execute the FileBrowser setup script
+sleep 5
+pct exec $CTID -- bash -c "bash <(curl -fsSL https://raw.githubusercontent.com/Najdat/proxmox-filebrowser-lxc/main/filebrowser-setup.sh)"
 
-echo "FileBrowser installation complete. Access it via http://<container-ip>:8080"
+echo "\n✅ LXC Container $CTID ($HOSTNAME) with FileBrowser has been created and configured."
