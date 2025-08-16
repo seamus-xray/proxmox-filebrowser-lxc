@@ -71,12 +71,12 @@ pct create $CTID local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst \
   -password "$PASSWORD" \
   -start 1
 
-echo -e "${INFO} Waiting for container to start..."
-sleep 5
-echo -e "${info} Installing cURL ..."
-pct exec $CTID -- bash -c "apt update && apt install -y curl"
-sleep 5
-echo -e "${INFO} Installing FileBrowser in container..."
-PASSWORD="$PASSWORD" pct exec $CTID -- bash -c "curl -fsSL https://raw.githubusercontent.com/seamus-xray/proxmox-filebrowser-lxc/main/filebrowser-install.sh | bash"
-
-echo -e "${CM} FileBrowser LXC deployed and installation started."
+#echo -e "${INFO} Waiting for container to start..."
+#sleep 5
+#echo -e "${info} Installing cURL ..."
+#pct exec $CTID -- bash -c "apt update && apt install -y curl"
+#sleep 5
+#echo -e "${INFO} Installing FileBrowser in container..."
+#PASSWORD="$PASSWORD" pct exec $CTID -- bash -c "curl -fsSL https://raw.githubusercontent.com/seamus-xray/proxmox-filebrowser-lxc/main/filebrowser-install.sh | bash"#
+#
+#echo -e "${CM} FileBrowser LXC deployed and installation started."
