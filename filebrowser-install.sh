@@ -62,6 +62,6 @@ pct create $CTID $TEMPLATE \
 sleep 5
 pct exec $CTID -- bash -c "apt update && apt install -y curl"
 sleep 5
-pct exec $CTID -- bash -c "bash <(curl -fsSL https://raw.githubusercontent.com/Najdat/proxmox-filebrowser-lxc/main/filebrowser-setup.sh)"
+pct exec $CTID -- bash -c "bash <(curl -fsSL https://raw.githubusercontent.com/seamus-xray/proxmox-filebrowser-lxc/main/filebrowser-setup.sh)"
 
 echo "\n✅ LXC Container $CTID ($HOSTNAME) with FileBrowser has been created and configured."
