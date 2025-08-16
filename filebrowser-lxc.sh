@@ -62,7 +62,7 @@ pct create $CTID local:vztmpl/debian-12-standard_12.0-1_amd64.tar.zst \
   -hostname $CTNAME \
   -cores $CORES \
   -memory $RAM \
-  -rootfs local-zfs:${DISK}G \
+  -rootfs local-zfs:${DISK} \
   -net0 name=eth0,bridge=$BRIDGE,ip=$IP,gw=$GW \
   -unprivileged 1 \
   -features nesting=1 \
