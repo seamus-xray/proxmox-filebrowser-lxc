@@ -32,9 +32,9 @@ GATEWAY=$(prompt "Enter Gateway" "$GATEWAY")
 
 # Password prompt with check
 while true; do
-  read -s -p "Enter new password (min 5 chars): " $PASSWORD
+  read -s -p "Enter new password (min 5 chars): " PASSWORD
   echo
-  read -s -p "Retype new password: " $PASSWORD
+  read -s -p "Retype new password: " PASSWORD_CONFIRM
   echo
   if [[ "$PASSWORD" != "$PASSWORD_CONFIRM" ]]; then
     echo "Passwords do not match. Try again."
