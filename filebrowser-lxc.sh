@@ -76,8 +76,7 @@ sleep 5
 echo -e "${info} Installing cURL ..."
 pct exec $CTID -- bash -c "apt update && apt install -y curl"
 sleep 5
-pct exec $CTID --interactive --tty --bash
 echo -e "${INFO} Installing FileBrowser in container..."
-pct exec $CTID -- bash -c "curl -fsSL https://raw.githubusercontent.com/seamus-xray/proxmox-filebrowser-lxc/main/filebrowser-install.sh | bash"
+PASSWORD="$PASSWORD" pct exec $CTID -- bash -c "curl -fsSL https://raw.githubusercontent.com/seamus-xray/proxmox-filebrowser-lxc/main/filebrowser-install.sh | bash"
 
 echo -e "${CM} FileBrowser LXC deployed and installation started."
