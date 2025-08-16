@@ -46,12 +46,12 @@ while true; do
 done
 
 # Create the LXC container
-TEMPLATE="local:vztmpl/debian-12-standard_12.0-1_amd64.tar.zst"
+TEMPLATE="local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
 pct create $CTID $TEMPLATE \
   -hostname $HOSTNAME \
   -cores $CORES \
   -memory $MEMORY \
-  -rootfs local-lvm:${DISK} \
+  -rootfs local-zfs:${DISK} \
   -net0 name=eth0,bridge=$BRIDGE,ip=$IP,gw=$GATEWAY \
   -unprivileged 1 \
   -features nesting=1 \
