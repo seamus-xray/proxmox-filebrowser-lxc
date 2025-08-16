@@ -30,6 +30,8 @@ BRIDGE=$(prompt "Enter Network Bridge" "vmbr0")
 IP=$(prompt "Enter Static IP" "$SUGGESTED_IP/24")
 GATEWAY=$(prompt "Enter Gateway" "$GATEWAY")
 
+echo "Received password: $PASSWORD"
+
 # Password prompt with check
 while true; do
   read -s -p "Enter new password (min 5 chars): " PASSWORD
