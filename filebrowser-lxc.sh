@@ -58,7 +58,7 @@ done
 
 echo -e "${INFO} Creating LXC container ${CTID}..."
 
-pct create $CTID local:vztmpl/debian-12-standard_12.0-1_amd64.tar.zst \
+pct create $CTID local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst \
   -hostname $CTNAME \
   -cores $CORES \
   -memory $RAM \
